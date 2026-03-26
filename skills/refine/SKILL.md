@@ -1,7 +1,7 @@
 ---
 name: refine
 description: Iteratively refine any spec, plan, or architecture by alternating between creation and adversarial review until no gaps remain. Use when you hear "refine my spec", "bulletproof this plan", "find gaps", "설계 다듬기", "구멍 찾기", "기획 검증", or when starting any new specification that needs to be thorough.
-argument-hint: "[topic or file path] — what to spec/refine"
+argument-hint: "[--auto] [topic or file path] — what to spec/refine (--auto for autonomous mode)"
 allowed-tools:
   - Agent
   - AskUserQuestion
@@ -18,11 +18,30 @@ The core principle: **the creator and the destroyer must be separate.** You buil
 
 ## Input
 
+- If `$ARGUMENTS` contains `--auto` → Enable **autonomous mode** (see below)
 - If `$ARGUMENTS` contains a file path → Read the file as the starting spec
 - If `$ARGUMENTS` contains a topic description → Use it as the spec brief
 - If empty → Ask the user: "What would you like to spec/refine?"
 
 Detect the user's language from their input and use that language throughout the entire process.
+
+## Modes
+
+### Standard mode (default)
+Every 🔴🟡 gap is presented to the user as a question. The user answers, and the spec is updated accordingly.
+
+### Autonomous mode (`--auto`)
+AI resolves gaps on its own and only asks the user when a gap requires **intent or direction** — something only the human can decide.
+
+Gap classification in autonomous mode:
+- **AI-resolvable**: Implementation details, technical decisions, standard patterns, best practices → AI decides and incorporates silently
+- **User-required**: Business intent, priority trade-offs, scope decisions, "what do you actually want?" → Ask the user
+
+When running autonomously, report a brief summary after each round instead of asking questions:
+```
+Round {n}: 🔴 {x} / 🟡 {y} resolved autonomously. {k} questions need your input.
+```
+Then ask only the user-required questions (if any). If zero user-required questions, proceed directly to the next round without pausing.
 
 ## Process Overview
 
@@ -113,6 +132,8 @@ Round {n} result: 🔴 {x} / 🟡 {y} / ⚪ {z} found
 
 ## Phase 4: ASK
 
+### Standard mode
+
 For each 🔴 and 🟡 gap, formulate a **specific, answerable question** for the user.
 
 **Rules:**
@@ -143,6 +164,28 @@ Also list ⚪ items as informational (no questions needed):
 ```
 
 After receiving all answers → return to **Phase 1** of the next round.
+
+### Autonomous mode (`--auto`)
+
+For each 🔴 and 🟡 gap, classify it:
+
+1. **AI-resolvable** — You can decide this yourself using best practices, common patterns, or reasonable defaults. Resolve it silently and note what you decided.
+2. **User-required** — Only the human can answer this (business intent, priority, scope, trade-offs). Ask the user.
+
+**Output:**
+
+```
+🤖 Round {n} autonomous decisions:
+  ✅ [gap] → Resolved: {what you decided and why}
+  ✅ [gap] → Resolved: {what you decided and why}
+
+❓ Questions that need your input:
+  🔴 {gap} → {question}
+  🟡 {gap} → {question}
+```
+
+If zero user-required questions → proceed directly to Phase 1 without pausing.
+If user-required questions exist → wait for answers, then proceed to Phase 1.
 
 ---
 
@@ -177,10 +220,22 @@ When zero 🔴 and zero 🟡 gaps remain:
 {list of all ⚪ items accumulated across rounds, for future consideration}
 ```
 
-3. Summary:
+3. Save round history to `./docs/{topic-slug}-refine-log.tsv`:
+
+```tsv
+round	gaps_red	gaps_yellow	gaps_white	resolved_by_ai	resolved_by_user	status	description
+1	3	5	2	0	8	continue	Initial spec — auth flow gaps identified
+2	1	2	4	2	1	continue	Auth and error handling reinforced
+3	0	0	3	0	0	complete	All critical/important gaps resolved
+```
+
+This log accumulates across rounds. Write the header on Round 1, append a row after each JUDGE phase. This file is the refinement history — useful for analyzing patterns in your blind spots over time.
+
+4. Summary:
 ```
 ✅ Complete — {n} rounds, {total_gaps} gaps found and resolved
-📄 Saved to: ./docs/{filename}.md
+📄 Spec saved to: ./docs/{filename}.md
+📊 Log saved to: ./docs/{filename}-log.tsv
 ```
 
 ---
@@ -204,3 +259,5 @@ If the user signals they want to stop ("enough", "됐어", "이 정도면 충분
 4. **ALWAYS save the result** to a `.md` file at completion or early exit.
 5. **Respect the user's language.** Match the language they use throughout.
 6. **No round limit.** Continue until gaps reach zero or the user stops.
+7. **ALWAYS log every round** to the TSV file. Write the header on Round 1, append after each JUDGE phase.
+8. **In autonomous mode**, be transparent about your decisions. Always show what you resolved and why, so the user can override if needed.
