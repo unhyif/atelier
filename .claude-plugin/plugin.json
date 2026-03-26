@@ -1,11 +1,11 @@
 {
   "name": "atelier",
   "version": "0.1.0",
-  "description": "Design refinement through adversarial iteration — find and eliminate blind spots in any plan, spec, or architecture",
+  "description": "Spec refinement through adversarial iteration — find and eliminate blind spots in any plan, spec, or architecture",
   "author": {
     "name": "jihyun"
   },
-  "repository": "https://github.com/jihyun/atelier",
+  "repository": "https://github.com/unhyif/atelier",
   "license": "MIT",
-  "keywords": ["design", "refinement", "adversarial-review", "gap-finding"]
+  "keywords": ["spec", "refinement", "adversarial-review", "gap-finding"]
 }
