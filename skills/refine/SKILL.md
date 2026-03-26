@@ -94,11 +94,13 @@ ALWAYS show the FULL spec document — not just what changed.
 
 Do NOT attempt adversarial review yourself. You created the spec — you are biased by your own reasoning, the conversation history, and the user's stated intentions. The breaker agent sees NONE of that.
 
-Spawn the breaker agent with the Agent tool:
+Spawn the breaker agent with the Agent tool. Use **sonnet** model and **run in background** for speed:
 
 ```
 Agent(
   subagent_type: "atelier:breaker",
+  model: "sonnet",
+  run_in_background: true,
   prompt: "{the full text of the current spec document — nothing else}",
   description: "Adversarial review of spec v{n}"
 )
@@ -111,6 +113,11 @@ Pass ONLY the spec document text. Do NOT include:
 - Previous round's gaps or answers
 
 The breaker sees the spec as a stranger would. That is the point.
+
+Since the breaker runs in the background, use the wait time productively:
+- Show the user the current spec version
+- Summarize what changed since the last round
+- When the breaker completes, you will be notified automatically — proceed to Phase 3
 
 ---
 
