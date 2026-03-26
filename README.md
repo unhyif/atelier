@@ -26,32 +26,44 @@ The core principle: **the creator and the destroyer must be separate.** The refi
 
 ## Usage
 
+### Standard mode
+
+Every gap is presented to the user as a question.
+
 ```
 /atelier:refine [topic or file path]
+```
+
+### Autonomous mode
+
+AI resolves implementation-level gaps silently. Only asks user for intent/direction decisions.
+
+```
+/atelier:refine --auto [topic or file path]
 ```
 
 ### Examples
 
 ```
-/atelier:refine AI chatbot authentication system
-/atelier:refine ./docs/api-spec.md
+/atelier:refine API authentication system
+/atelier:refine --auto ./docs/api-spec.md
 /atelier:refine
 ```
 
-Output is saved to `./docs/{topic}-refine.md`.
+## Output
+
+| File | Purpose |
+|------|---------|
+| `./docs/{topic}-refine.md` | Final refined spec |
+| `./docs/{topic}-refine-log.tsv` | Round-by-round history (gaps found, resolution method) |
+
+The TSV log tracks each round's gap counts and how they were resolved (by AI or by user), useful for analyzing blind spot patterns over time.
 
 ## Installation
 
-```bash
-claude plugin add /path/to/atelier
 ```
-
-Or add to your Claude Code settings:
-
-```json
-{
-  "plugins": ["https://github.com/unhyif/atelier"]
-}
+/plugin marketplace add unhyif/atelier
+/plugin install atelier@atelier
 ```
 
 ## License

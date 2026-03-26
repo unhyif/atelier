@@ -1,9 +1,9 @@
 {
   "name": "atelier",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Spec refinement through adversarial iteration — find and eliminate blind spots in any plan, spec, or architecture",
   "author": {
-    "name": "jihyun"
+    "name": "unhyif"
   },
   "repository": "https://github.com/unhyif/atelier",
   "license": "MIT",
