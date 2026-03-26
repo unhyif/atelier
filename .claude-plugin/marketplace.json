@@ -1,0 +1,19 @@
+{
+  "name": "atelier",
+  "owner": {
+    "name": "unhyif"
+  },
+  "metadata": {
+    "description": "Spec refinement through adversarial iteration — find and eliminate blind spots in any plan, spec, or architecture",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "atelier",
+      "source": "./",
+      "description": "Iterative spec refinement with isolated adversarial review. BUILD → BREAK → ASK → repeat until gap-free.",
+      "category": "workflow",
+      "tags": ["spec", "refinement", "adversarial-review", "gap-finding", "planning"]
+    }
+  ]
+}
