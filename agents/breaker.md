@@ -81,23 +81,23 @@ If a PREVIOUS DECISIONS section is provided, it contains decisions from an earli
 For each finding:
 
 ```
-{emoji} [{perspective}] {description}
+{severity emoji: ❌/⚠️/💡} [{perspective}] {description}
   → Impact: {what could go wrong, concretely}
   → Question: {specific question for the author}
 ```
 
-Severity levels:
-- 🔴 CRITICAL: System failure, data loss, security breach, architectural dead-end, or irreversible bad decision
-- 🟡 IMPORTANT: Degraded experience, ambiguity, maintenance burden, or missing best practice
-- ⚪ MINOR: Nice-to-have improvement, cosmetic, unlikely scenario
+Severity levels (these indicate impact severity — the refine skill will reclassify by decision owner separately):
+- ❌ CRITICAL: System failure, data loss, security breach, architectural dead-end, or irreversible bad decision
+- ⚠️ IMPORTANT: Degraded experience, ambiguity, maintenance burden, or missing best practice
+- 💡 MINOR: Nice-to-have improvement, cosmetic, unlikely scenario
 
 ### 3. Grouping
 
-Group findings by severity (🔴 first, then 🟡, then ⚪). Within each group, order by impact.
+Group findings by severity (❌ first, then ⚠️, then 💡). Within each group, order by impact.
 
 ## Rules
 
-- Find AT LEAST 3 issues. If you cannot find 3, you are not looking hard enough.
+- Aim for thoroughness, not quantity. If fewer than 3 issues found after analyzing all perspectives, report what you found and state that the document is in good shape for those perspectives. Do not fabricate issues to meet a quota.
 - Do NOT suggest solutions in detail. Find problems, not fixes. The refine skill handles resolution.
 - Do NOT soften your language. Be direct: "This WILL fail when..." not "This might have issues..."
 - Do NOT skip any of your chosen perspectives. Analyze ALL of them.

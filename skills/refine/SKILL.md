@@ -1,6 +1,6 @@
 ---
 name: refine
-description: Refine any document (PRD, architecture, spec, plan) by dispatching an adversarial Breaker agent to find gaps, then classifying and resolving them. Use when you hear "refine", "bulletproof this", "find gaps", "improve this spec", "설계 다듬기", "구멍 찾기", "기획 검증", "이거 리뷰해줘", "빠진거 없나", or when starting any specification that needs to be thorough.
+description: Refine any document (PRD, architecture, spec, plan) by dispatching an adversarial Breaker agent to find gaps, then classifying and resolving them. Use when you hear "refine", "bulletproof this", "find gaps", "improve this spec", "critique this", "punch holes", "review my spec", "find weaknesses", "설계 다듬기", "구멍 찾기", "기획 검증", "이거 리뷰해줘", "빠진거 없나", "놓친 거 없나", "이거 괜찮은지 봐줘", "검토해줘", "좀 더 탄탄하게", or when starting any specification that needs to be thorough. Even if the user doesn't use these exact phrases, trigger whenever they want a document reviewed for completeness, blind spots, or quality.
 argument-hint: "[document path] [natural language context e.g. '보안 관점도 봐줘', 'pre-mortem 관점 참고', '이전 버전은 xxx_refined_v1.md']"
 allowed-tools:
   - Agent
@@ -129,13 +129,24 @@ PREVIOUS DECISIONS (respect these unless the document explicitly contradicts the
 {if base: 📌 이전 버전: {base_path} (기존 결정 {n}건 참고)}
 ```
 
-When the Breaker completes, you will be notified. Proceed to Phase 3.
+When the Breaker completes, you will be notified. Validate the result before proceeding:
+
+- **Empty or malformed output**: Retry once with the same prompt. If still fails, inform the user and offer to proceed with your own analysis as fallback.
+- **Valid output**: Proceed to Phase 3.
 
 ---
 
 ## Phase 3: CLASSIFY
 
 Collect ALL findings from the Breaker. Show **every single one** — do not summarize, truncate, or omit any items.
+
+### Confidence Rating (★)
+
+| Rating | Meaning | Litmus Test |
+|--------|---------|-------------|
+| ★★★ | Industry standard converges to one answer. Dissent is unreasonable. | "Would a senior engineer object?" → No |
+| ★★☆ | Best practice exists but implementation varies by context. | "Would a senior engineer want to discuss this?" → Maybe briefly |
+| ★☆☆ | Recommendation-level. Reasonable professionals can disagree. → Escalate to 🔴 Human | "Would a senior engineer push back?" → Yes, legitimately |
 
 For each finding, apply this decision tree:
 
