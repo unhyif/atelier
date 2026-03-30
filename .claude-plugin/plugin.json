@@ -1,11 +1,11 @@
 {
   "name": "atelier",
-  "version": "0.2.0",
-  "description": "Spec refinement through adversarial iteration — find and eliminate blind spots in any plan, spec, or architecture",
+  "version": "0.3.0",
+  "description": "Document refinement through adversarial review — dispatches an isolated Breaker agent to find gaps and quality issues, then classifies and resolves them to produce an improved version",
   "author": {
     "name": "unhyif"
   },
   "repository": "https://github.com/unhyif/atelier",
   "license": "MIT",
-  "keywords": ["spec", "refinement", "adversarial-review", "gap-finding"]
+  "keywords": ["spec", "refinement", "adversarial-review", "gap-finding", "prd", "architecture", "document-quality"]
 }

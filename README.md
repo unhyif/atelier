@@ -1,63 +1,85 @@
 # Atelier
 
-Spec refinement through adversarial iteration — find and eliminate blind spots in any plan, spec, or architecture.
+Document refinement through adversarial review — find and eliminate blind spots in any PRD, architecture, spec, or plan.
 
 ## How it works
 
 ```
-Round N:
-  Phase 1: BUILD  → Create/update spec (ask user if unclear)
-  Phase 2: BREAK  → Spawn breaker agent (isolated context)
-  Phase 3: JUDGE  → Classify gaps by severity
-  Phase 4: ASK    → Question user about critical/important gaps
-  → Loop to Round N+1
-
-Exit when: zero critical and zero important gaps remain
+Phase 1: UNDERSTAND  → Parse input, ask for reference perspectives
+Phase 2: BREAK       → Spawn Breaker agent (isolated, background)
+Phase 3: CLASSIFY    → Show ALL findings, classify by decision owner
+Phase 4: DECIDE      → 🔴 Human questions / 🟡 AI best-practice decisions
+Phase 5: GENERATE    → Produce refined document preserving original structure
 ```
 
-The core principle: **the creator and the destroyer must be separate.** The refine skill builds the spec. The breaker agent attacks it with fresh context, free from confirmation bias.
+The core principle: **the creator and the destroyer must be separate.** The Breaker agent sees only the document — no conversation history, no user intent. It selects its own analysis perspectives based on the document content.
 
 ## Components
 
 | Type | Name | Purpose |
 |------|------|---------|
-| Skill | `refine` | Orchestrates the BUILD → BREAK → ASK loop |
-| Agent | `breaker` | Adversarial reviewer — sees only the spec, no conversation history |
+| Skill | `refine` | Orchestrator — dispatches agents, classifies gaps, generates refined document |
+| Agent | `breaker` | Adversarial reviewer — quality review + gap finding in isolated context |
 
 ## Usage
 
-### Standard mode
-
-Every gap is presented to the user as a question.
-
 ```
-/atelier:refine [topic or file path]
-```
-
-### Autonomous mode
-
-AI resolves implementation-level gaps silently. Only asks user for intent/direction decisions.
-
-```
-/atelier:refine --auto [topic or file path]
-```
-
-### Examples
-
-```
-/atelier:refine API authentication system
-/atelier:refine --auto ./docs/api-spec.md
+/atelier:refine prd.md
+/atelier:refine prd.md pre-mortem 관점도 참고해줘
+/atelier:refine prd.md 이전 버전은 prd_refined_v1.md
 /atelier:refine
 ```
 
+### Reference perspectives
+
+You can inject analysis methodologies from any installed skill or agent:
+
+```
+/atelier:refine spec.md security-reviewer 관점으로 봐줘
+/atelier:refine plan.md pre-mortem이랑 architect 관점 참고
+```
+
+The Breaker extracts the methodology and uses it alongside its own judgment.
+
+### Base mode (v2+)
+
+Build on a previous refined version — existing decisions are respected:
+
+```
+/atelier:refine prd_2.md 이전 버전은 prd_refined_v1.md
+```
+
+Conflict priority: Source document change > 🔴 Human decision > 🟡 AI decision.
+
+## Gap Classification
+
+Gaps are classified by **decision owner**, not severity:
+
+| Classification | Who decides | Criteria |
+|---------------|-------------|----------|
+| 🔴 Human | User | Irreversible, creates dependencies, or involves tradeoffs |
+| 🟡 AI | AI (with rationale) | Industry best practice exists, confidence ★★☆+ |
+| ⚪ Skip | Nobody | Unrealistic scenario, not worth addressing |
+
+AI decisions include a confidence rating (★) and rationale. The user can override any 🟡 decision.
+
 ## Output
 
-| File | Purpose |
-|------|---------|
-| `./docs/{topic}-refine.md` | Final refined spec |
-| `./docs/{topic}-refine-log.tsv` | Round-by-round history (gaps found, resolution method) |
+Saves to `{name}_refined_v{n}.md` — the original document structure preserved exactly, with improvements woven in naturally. A Decision appendix below `---` tracks all Human and AI decisions for audit.
 
-The TSV log tracks each round's gap counts and how they were resolved (by AI or by user), useful for analyzing blind spot patterns over time.
+```markdown
+{original document — structure preserved, improvements integrated}
+
+---
+
+> 📌 Refined v1 | From: prd.md | 2026-03-31
+
+## 🔴 Human Decisions
+| # | Section | Gap | Decision |
+
+## 🟡 AI Decisions
+| # | Section | Gap | Applied Practice | ★ | Rationale |
+```
 
 ## Installation
 
