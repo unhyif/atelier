@@ -4,14 +4,14 @@
     "name": "unhyif"
   },
   "metadata": {
-    "description": "Spec refinement through adversarial iteration — find and eliminate blind spots in any plan, spec, or architecture",
-    "version": "0.2.0"
+    "description": "Document refinement through adversarial review — dispatches an isolated Breaker agent to find gaps and quality issues, then classifies and resolves them to produce an improved version",
+    "version": "0.3.1"
   },
   "plugins": [
     {
       "name": "atelier",
       "source": "./",
-      "description": "Iterative spec refinement with isolated adversarial review. BUILD → BREAK → ASK → repeat until gap-free.",
+      "description": "Document refinement through adversarial review — dispatches Breaker agent in isolation, classifies gaps by decision owner, produces refined document preserving original structure.",
       "category": "workflow",
       "tags": ["spec", "refinement", "adversarial-review", "gap-finding", "planning"]
     }
