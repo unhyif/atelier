@@ -6,9 +6,9 @@ Document refinement through adversarial review — find and eliminate blind spot
 
 ```
 Phase 1: UNDERSTAND  → Parse input, ask for reference perspectives
-Phase 2: BREAK       → Spawn Breaker agent (isolated, background)
+Phase 2: BREAK       → Spawn Breaker agent (isolated, reads file via Read tool)
 Phase 3: CLASSIFY    → Show ALL findings, classify by decision owner
-Phase 4: DECIDE      → 🔴 Human questions / 🟡 AI best-practice decisions
+Phase 4: DECIDE      → 🔴 Human / 🟡 AI decisions (5-7 items per batch)
 Phase 5: GENERATE    → Produce refined document preserving original structure
 ```
 

@@ -90,7 +90,7 @@ Proceed directly — Breaker will use its own judgment to select perspectives.
 
 **Spawn the Breaker agent in the background.**
 
-Build the prompt with only the document text, plus methodology and previous decisions if applicable. Do NOT include conversation history or user's original request.
+Build the prompt with the file path, plus methodology and previous decisions if applicable. Do NOT include conversation history, user's original request, or the document text itself — the Breaker reads the file directly using its Read tool.
 
 ```
 Agent(
@@ -98,7 +98,8 @@ Agent(
   model: "sonnet",
   run_in_background: true,
   prompt: "
-{full document text}
+Review the document at: {file_path}
+Read it using the Read tool. For large documents (500+ lines), read in sections.
 
 {if methodology was extracted:
 ---
@@ -192,14 +193,19 @@ Present ALL findings to the user:
 
 ## Phase 4: DECIDE
 
-### 🔴 Human Decisions
+Present 🔴 and 🟡 items together in batches as a regular response (not AskUserQuestion). The user replies freely with their decisions.
 
-Ask the user about each 🔴 item:
+### Batching Rules
+
+- **5-7 items per batch** (🔴 first, then 🟡). If total items ≤ 7, present all at once.
+- After each batch, wait for the user's response before presenting the next.
+- End each batch with remaining count: `"위 항목에 대해 답변해주세요. ({n}건 남음)"` or `"마지막 배치입니다."`
+
+### 🔴 Human Decisions
 
 - One gap = one question. Do not bundle.
 - Ask about the user's **intent**, not implementation details.
 - Provide 2-3 concrete options when possible.
-- Maximum 7 questions per message. If more exist, present in batches.
 
 Format:
 ```
@@ -210,7 +216,7 @@ Format:
 
 ### 🟡 AI Decisions
 
-Show them as confirmation — the user can override any by responding:
+Show as confirmation — the user can override any by responding:
 ```
 🟡 AI Decisions (override 가능):
   1. {gap} → {practice} (★★★) — {rationale}

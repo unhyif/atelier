@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "Document refinement through adversarial review — dispatches an isolated Breaker agent to find gaps and quality issues, then classifies and resolves them to produce an improved version",
-    "version": "0.3.1"
+    "version": "0.3.2"
   },
   "plugins": [
     {
