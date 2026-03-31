@@ -66,7 +66,11 @@ AskUserQuestion:
 
 1. Find and read the referenced skill's SKILL.md or agent's .md file
 2. Extract the analysis methodology/framework/checklist from it
-3. Show the extracted methodology to the user:
+3. **Broad perspective 확장**: "보안", "성능", "장애 대응" 같은 넓은 키워드는 구체적 하위 관점으로 분해한다. 예:
+   - "보안" → 인증/인가, 입력 검증, rate limiting, 데이터 암호화, PII 보호, abuse prevention
+   - "장애 대응" → retry 전략, circuit breaker, DLQ, failover, 모니터링/alerting, 롤백
+   - "성능" → 지연시간 목표, 처리량, 캐싱, DB 최적화, 수평 확장
+4. Show the extracted methodology to the user:
 
 ```
 📐 추출된 관점:
@@ -130,9 +134,22 @@ PREVIOUS DECISIONS (respect these unless the document explicitly contradicts the
 {if base: 📌 이전 버전: {base_path} (기존 결정 {n}건 참고)}
 ```
 
+### Fallback: Agent 도구가 없는 경우
+
+Agent 도구를 사용할 수 없는 환경(서브에이전트 컨텍스트 등)에서는 **Self-Break 모드**로 전환한다:
+
+1. Breaker의 에이전트 정의(`agents/breaker.md`)를 Read 도구로 읽는다
+2. Breaker의 마인드셋과 방법론을 **내면화**하여 직접 분석을 수행한다
+3. 출력 형식은 Breaker와 동일하게 유지: 관점 선택 → 심각도별 그룹핑 → finding 목록
+4. 사용자에게 Self-Break 모드로 진행함을 알린다
+
+이 경우에도 Phase 3~5는 동일하게 진행한다.
+
+### Breaker 결과 검증
+
 When the Breaker completes, you will be notified. Validate the result before proceeding:
 
-- **Empty or malformed output**: Retry once with the same prompt. If still fails, inform the user and offer to proceed with your own analysis as fallback.
+- **Empty or malformed output**: Retry once with the same prompt. If still fails, inform the user and Self-Break 모드로 전환한다.
 - **Valid output**: Proceed to Phase 3.
 
 ---
@@ -164,8 +181,8 @@ For each finding, apply this decision tree:
 4. "업계 표준 해법이 있는가?"
    → Yes → 🟡 AI Decision
             → If confidence is ★☆☆ → Escalate to 🔴 Human
-   → No  → "현실적으로 발생하는가?"
-            → No  → ⚪ Skip
+   → No  → "현실적으로 발생하는가?" (실제 프로덕션에서 1% 이상 확률로 일어나는가?)
+            → No  → ⚪ Skip (반드시 skip 사유를 명시: "이론적으로만 가능", "현재 규모에서 해당 없음" 등)
             → Yes → Escalate to 🔴 Human
 ```
 
@@ -262,6 +279,15 @@ Create the refined document.
 3. **The appendix below `---` is the Decision audit trail** — for reviewers who want to know what changed and why.
 4. **New sections** added by refine go after all original sections but before `---`.
 
+### Depth Expectations
+
+원본 구조를 보존하되, **내용의 깊이는 과감하게 보강**해야 한다. 구조 보존이 내용 축소를 정당화하지 않는다.
+
+- **기존 섹션 강화**: 모호한 문장은 구체적 수치/기준/예시로 교체한다. "빠르게 처리한다" → "P99 100ms 이내"
+- **누락 섹션 추가**: 결정에 따라 필요한 섹션을 원본 섹션 뒤에 적극적으로 추가한다 (에러 처리, 모니터링, 보안, 데이터 모델 등)
+- **구체성 기준**: refined 문서를 읽은 사람이 추가 질문 없이 구현/실행에 착수할 수 있어야 한다
+- **최소 분량**: refined 문서는 원본 대비 최소 1.5배 이상의 분량이어야 한다. 1.5배 미만이면 분석이 피상적이었을 가능성이 높다
+
 ### Save
 
 Save to `{original_name}_refined_v{n}.md` in the same directory as the source.
@@ -306,7 +332,7 @@ If the user signals stop ("enough", "됐어", "이 정도면 충분해", "stop")
 
 ## Rules
 
-1. **NEVER analyze the document yourself.** ALWAYS dispatch the Breaker agent.
+1. **Breaker agent를 우선 dispatch한다.** Agent 도구가 없는 환경에서만 Self-Break 모드로 전환한다.
 2. **ALWAYS use `run_in_background: true`** when spawning the Breaker.
 3. **ALWAYS show ALL Breaker findings** in Phase 3 — never summarize or omit.
 4. **ALWAYS preserve original document structure** — headers, order, formatting.

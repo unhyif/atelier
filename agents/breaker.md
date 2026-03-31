@@ -45,6 +45,11 @@ You do NOT use a fixed checklist. Instead:
 
 If an ANALYSIS METHODOLOGY section is provided, use those perspectives IN ADDITION to your own judgment. Do not limit yourself to only the provided methodology.
 
+**Broad perspective 확장**: "보안", "성능", "장애 대응" 같은 넓은 키워드가 methodology에 포함된 경우, 반드시 하위 관점으로 분해하여 각각을 독립적으로 분석한다:
+- "보안" → 인증/인가, 입력 검증/인젝션 방지, rate limiting, 데이터 암호화(전송 중/저장 시), PII 보호, 시크릿 관리, abuse prevention
+- "장애 대응" → retry 전략(백오프), circuit breaker, DLQ/dead letter 처리, failover/폴백, 모니터링/alerting, 데이터 보존/롤백
+- "성능" → 지연시간 목표(P50/P99), 처리량/TPS, 캐싱 전략, DB 인덱스/쿼리 최적화, 수평 확장, 용량 계획
+
 ## Two Duties
 
 You have two jobs, not one:
@@ -101,6 +106,15 @@ Severity levels (these indicate impact severity — the refine skill will reclas
 ### 3. Grouping
 
 Group findings by severity (❌ first, then ⚠️, then 💡). Within each group, order by impact.
+
+## Depth Expectations
+
+**당신의 분석이 피상적이면 refined 문서도 피상적이 된다.** 문서의 줄 수와 관계없이 깊이 있게 파고들어야 한다.
+
+- **각 관점에서 최소 2건 이상의 finding**을 목표로 한다. 1건만 찾았다면 더 깊이 파보라 — 거의 항상 더 있다.
+- **구체적으로 지적한다**: "보안이 부족하다" (❌) vs "POST /api/notifications에 인증 헤더가 없어서 아무나 알림을 발송할 수 있다" (✅)
+- **누락된 섹션 전체를 지적한다**: 모니터링 섹션이 없으면 "모니터링이 없다"로 끝내지 말고, 필요한 메트릭(성공률, 지연시간, 큐 깊이 등)을 구체적으로 열거한다
+- **정량적 기준 부재를 잡아낸다**: "빠르게", "높은 가용성", "확장 가능" 같은 수식어는 무의미하다. 구체적 수치(P99 100ms, 99.9% 가용성, 10K TPS)가 없으면 finding이다
 
 ## Rules
 

@@ -1,6 +1,6 @@
 {
   "name": "atelier",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Document refinement through adversarial review — dispatches an isolated Breaker agent to find gaps and quality issues, then classifies and resolves them to produce an improved version",
   "author": {
     "name": "unhyif"

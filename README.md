@@ -5,11 +5,11 @@ Document refinement through adversarial review — find and eliminate blind spot
 ## How it works
 
 ```
-Phase 1: UNDERSTAND  → Parse input, ask for reference perspectives
-Phase 2: BREAK       → Spawn Breaker agent (isolated, reads file via Read tool)
-Phase 3: CLASSIFY    → Show ALL findings, classify by decision owner
+Phase 1: UNDERSTAND  → Parse input, expand broad perspectives into sub-perspectives
+Phase 2: BREAK       → Spawn Breaker agent (or Self-Break fallback if Agent unavailable)
+Phase 3: CLASSIFY    → Show ALL findings, classify by decision owner (🔴/🟡/⚪)
 Phase 4: DECIDE      → 🔴 Human / 🟡 AI decisions (5-7 items per batch)
-Phase 5: GENERATE    → Produce refined document preserving original structure
+Phase 5: GENERATE    → Produce refined document (1.5x+ depth, original structure preserved)
 ```
 
 The core principle: **the creator and the destroyer must be separate.** The Breaker agent sees only the document — no conversation history, no user intent. It selects its own analysis perspectives based on the document content.
@@ -26,8 +26,21 @@ The core principle: **the creator and the destroyer must be separate.** The Brea
 ```
 /atelier:refine prd.md
 /atelier:refine prd.md pre-mortem 관점도 참고해줘
+/atelier:refine prd.md 보안이랑 장애 대응 관점도 봐줘
 /atelier:refine prd.md 이전 버전은 prd_refined_v1.md
 /atelier:refine
+```
+
+### Broad perspective expansion
+
+Broad keywords like "보안", "성능", "장애 대응" are automatically expanded into concrete sub-perspectives:
+
+```
+"보안 봐줘"
+  → 인증/인가, 입력 검증, rate limiting, 데이터 암호화, PII 보호, abuse prevention
+
+"장애 대응 관점도"
+  → retry 전략, circuit breaker, DLQ, failover, 모니터링/alerting, 롤백
 ```
 
 ### Reference perspectives
@@ -59,13 +72,13 @@ Gaps are classified by **decision owner**, not severity:
 |---------------|-------------|----------|
 | 🔴 Human | User | Irreversible, creates dependencies, or involves tradeoffs |
 | 🟡 AI | AI (with rationale) | Industry best practice exists, confidence ★★☆+ |
-| ⚪ Skip | Nobody | Unrealistic scenario, not worth addressing |
+| ⚪ Skip | Nobody | <1% probability in production (skip reason always stated) |
 
 AI decisions include a confidence rating (★) and rationale. The user can override any 🟡 decision.
 
 ## Output
 
-Saves to `{name}_refined_v{n}.md` — the original document structure preserved exactly, with improvements woven in naturally. A Decision appendix below `---` tracks all Human and AI decisions for audit.
+Saves to `{name}_refined_v{n}.md` — the original document structure preserved exactly, with improvements woven in naturally. Refined documents are at least 1.5x the original length, with vague statements replaced by concrete numbers. A Decision appendix below `---` tracks all Human and AI decisions for audit.
 
 ```markdown
 {original document — structure preserved, improvements integrated}
@@ -80,6 +93,10 @@ Saves to `{name}_refined_v{n}.md` — the original document structure preserved 
 ## 🟡 AI Decisions
 | # | Section | Gap | Applied Practice | ★ | Rationale |
 ```
+
+## Self-Break Fallback
+
+When the Agent tool is unavailable (e.g., subagent contexts), the skill automatically switches to **Self-Break mode** — reading `agents/breaker.md` and internalizing the Breaker's adversarial mindset to perform analysis directly. All phases continue as normal.
 
 ## Installation
 
